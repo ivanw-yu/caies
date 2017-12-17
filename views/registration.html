@@ -5,27 +5,27 @@
   <form method = "post" action = "server/member_registration.php" id = "registration-form">
     <div class = "form-group">
       <label for = "first-name"> First Name </label>
-      <input id = "first-name" type = "text" name = "firstName" class = "form-control">
+      <input id = "first-name" type = "text" name = "firstName" class = "form-control" required>
       <p id = "first-name-message"></p>
     </div>
     <div class = "form-group">
       <label> Last Name </label>
-      <input id = "last-name" type = "text" name = "lastName" class = "form-control">
+      <input id = "last-name" type = "text" name = "lastName" class = "form-control" required>
       <p id = "last-name-message"></p>
     </div>
     <div class = "form-group">
       <label> Username </label>
-      <input id = "username" type = "text" name = "username" class = "form-control">
+      <input id = "username" type = "text" name = "username" class = "form-control" required>
       <p id = "username-message"></p>
     </div>
     <div class = "form-group">
       <label> Email </label>
-      <input id = "email" type = "text" name = "email" class = "form-control">
+      <input id = "email" type = "text" name = "email" class = "form-control" required>
       <p id = "email-message"></p>
     </div>
     <div class = "form-group">
       <label> Password </label>
-      <input id = "password" type = "password" name = "password" class = "form-control">
+      <input id = "password" type = "password" name = "password" class = "form-control" required>
       <p id = "password-message"></p>
     </div>
     <input id = "registration-submit" type = "submit" value = "Submit" class="btn btn-primary">
@@ -71,13 +71,27 @@
   function validatePassword(password){
     return /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password) && /[#?!@$%^&*\-]/.test(password) && password.length >= 5;
   }
+
+  function validateRegistrationForm(firstName, lastName, username, email, password){
+    if(validateEmail(email) && validateUsername(username) && validateName(firstName) && validateName(lastName)
+        && validatePassword(password)){
+          // submitButton.disabled = false;
+          return true;
+        }else{
+          return false;
+        }
+  }
   //var usernameMatch = /[]/
 
-  $("#email").change(function(event){
+  $("#email").on('input', function(event){
 
     if(emailMatch.test(email.value)){
       emailMessage.innerHTML = "Email valid";
       emailMessage.style.color = "green";
+      if(validateRegistrationForm(firstName.value, lastName.value, username.value, email.value, password.value)){
+        submitButton.disabled = false;
+        console.log("ENABLED - EM");
+      }
     }else{
       submitButton.disabled = true;
       emailMessage.innerHTML = "Email invalid";
@@ -85,11 +99,15 @@
     }
   });
 
-  $("#first-name").change(function(event){
+  $("#first-name").on('input',function(event){
 
     if(validateName(firstName.value)){
       firstNameMessage.innerHTML = "Name valid";
       firstNameMessage.style.color = "green";
+      if(validateRegistrationForm(firstName.value, lastName.value, username.value, email.value, password.value)){
+        submitButton.disabled = false;
+        console.log("ENABLED - EM");
+      }
     }else{
       submitButton.disabled = true;
       firstNameMessage.innerHTML = "Name invalid";
@@ -97,11 +115,15 @@
     }
   });
 
-  $("#last-name").change(function(event){
+  $("#last-name").on('input',function(event){
 
     if(validateName(lastName.value)){
       lastNameMessage.innerHTML = "Name valid";
       lastNameMessage.style.color = "green";
+      if(validateRegistrationForm(firstName.value, lastName.value, username.value, email.value, password.value)){
+        submitButton.disabled = false;
+        console.log("ENABLED - EM");
+      }
     }else{
       submitButton.disabled = true;
       lastNameMessage.innerHTML = "Name invalid";
@@ -109,11 +131,15 @@
     }
   });
 
-  $("#username").change(function(event){
+  $("#username").on('input',function(event){
 
     if(validateUsername(username.value)){
       usernameMessage.innerHTML = "Username valid";
       usernameMessage.style.color = "green";
+      if(validateRegistrationForm(firstName.value, lastName.value, username.value, email.value, password.value)){
+        submitButton.disabled = false;
+        console.log("ENABLED - EM");
+      }
     }else{
       submitButton.disabled = true;
       usernameMessage.innerHTML = "Username invalid. (Username must be 3-11 characters, excluding special characters)";
@@ -121,17 +147,28 @@
     }
   });
 
-  $("#password").change(function(event){
+  $("#password").on('input',function(event){
 
     if(validatePassword(password.value)){
       passwordMessage.innerHTML = "Password valid";
       passwordMessage.style.color = "green";
+      if(validateRegistrationForm(firstName.value, lastName.value, username.value, email.value, password.value)){
+        submitButton.disabled = false;
+        console.log("ENABLED - EM");
+      }
     }else{
       submitButton.disabled = true;
       passwordMessage.innerHTML = "Password invalid. (Password must be atleast 5 characters, including atleast 1 uppercase alphabet, lowercase alphabet, number, and special character)";
       passwordMessage.style.color = "red";
     }
   });
+
+  // $("#registration-form").change(function(event){
+  //   if(validateEmail(email) && validateUsername(username) && validateName(firstName) && validateName(lastName)
+  //       && validatePassword(password)){
+  //         submitButton.disabled = false;
+  //       }
+  // });
 
   $("#registration-form").submit(function(event){
 
@@ -142,8 +179,33 @@
           data: $('#registration-form').serialize(),
           success: function(serverResponse) {
                       //$("#single-page").html(serverResponse);
-                      //console.log(serverResponse);
-                      window.location.href = serverResponse;
+                      console.log(serverResponse);
+                      var res = JSON.parse(serverResponse);
+                      console.log(res);
+                      if(res.success){
+                        window.location.href = res.url;
+                      }else{
+                        if(res.usernameExists){
+                          usernameMessage.style.color = "red";
+                          usernameMessage.innerHTML = res.usernameExists;
+                        }
+                        if(res.emailExists){
+                          emailMessage.style.color = "red";
+                          emailMessage.innerHTML = res.emailExists;
+                        }
+                        if(res.error){
+                          // var message = document.createElement("div");
+                          // message.innerHTML = res.error;
+                          // message.style.height = "40px";
+                          // message.style.width = "90%";
+                          // message.style.position = "fixed";
+                          // message.style.top = "40px";
+                          // message.style.left = "5%";
+                          // message.style.color = "red";
+                          // document.body.appendChild(message);
+                        }
+                      }
+                      //window.location.href = serverResponse;
                   }
           });
 

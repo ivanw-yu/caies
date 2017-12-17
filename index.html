@@ -159,7 +159,7 @@ session_start();
     </script> -->
 
     <?php
-      echo $_SESSION['user'] . " " . $_SESSION['username'] . " " . $_SESSION['user'] . " " . $_SESSION['firstName'] . " " . $_SESSION['lastName'] . " " . $_SESSION['email']; 
+      echo $_SESSION['user'] . " " . $_SESSION['username'] . " " . $_SESSION['user'] . " " . $_SESSION['firstName'] . " " . $_SESSION['lastName'] . " " . $_SESSION['email'];
     ?>
     <script>
       $("#logout").click(function(){
@@ -171,8 +171,7 @@ session_start();
                       $("#single-page").html("You have logged out");
                   }
           });
-        })
-      })
+        });
     </script>
     <div class = "site-footer" style = "width: 100%; height: 90px; background-color: purple; color: white;"> © CIAS</div>
   </body>

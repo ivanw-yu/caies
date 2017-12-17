@@ -16,30 +16,40 @@
       <input id = "un" type = "text" name = "username" class = "form-control">
     </div> -->
     <div class = "form-group">
-      <label> Email </label>
-      <input id = "email" type = "text" name = "email" class = "form-control">
+      <label> Username/Email </label>
+      <input id = "email-or-username" type = "text" name = "emailOrUsername" class = "form-control">
     </div>
     <div class = "form-group">
       <label> Password </label>
       <input id = "password" type = "password" name = "password" class = "form-control">
     </div>
+    <p id = "login-message">Incorrect username or password</p>
     <input type = "submit" value = "Submit" class="btn btn-primary">
   </form>
 </div>
 
 <script>
-// $("#login-form").submit(function(event){
-//
-//     console.log($('#login-form').serialize());
-//     $.ajax({
-//         url: 'server/member_login.php',
-//         type: 'post',
-//         data: $('#login-form').serialize(),
-//         success: function(serverResponse) {
-//                     $("#single-page").html(serverResponse);
-//                 }
-//         });
-//
-//     event.preventDefault();
-// });
+
+var loginMessage = document.getElementById("login-message");
+$("#login-form").submit(function(event){
+
+    console.log($('#login-form').serialize());
+    $.ajax({
+        url: 'server/member_login.php',
+        type: 'post',
+        data: $('#login-form').serialize(),
+        success: function(serverResponse) {
+                    //$("#single-page").html(serverResponse);
+                    console.log(serverResponse);
+                    var jsonResponse = JSON.parse(serverResponse);
+                    if(jsonResponse.success){
+                      window.location.href = jsonResponse.url;
+                    }else{
+                      loginMessage.style.visibility = "visible";
+                    }
+                }
+        });
+
+    event.preventDefault();
+});
 </script>

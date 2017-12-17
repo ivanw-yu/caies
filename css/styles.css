@@ -83,10 +83,6 @@ body{
   margin-bottom: 50px;
 }
 
-.first-name-message,
-.last-name-message,
-.password-message,
-.email-message,
-.password-message {
+#first-name-message, #last-name-message, #password-message, #email-message, #password-message, #login-message {
   visibility: hidden;
 }

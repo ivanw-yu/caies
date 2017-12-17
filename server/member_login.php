@@ -6,41 +6,45 @@ session_start();
 
   $db = DbConnection::getInstance()->dbh;
 
-  $email = $_POST['email'];
-  // echo $email;
+  $emailOrUsername = $_POST['emailOrUsername'];
+  $jsonResponse = [];
 
-  $user = $db->query("SELECT * FROM Member WHERE `Email` = '" .$email . "'")->fetch();
+  $user = $db->query("SELECT * FROM Member WHERE `Email` = '" . strtolower($emailOrUsername) . "'");
+  if($user->rowCount() == 0){
+    $user = $db->query("SELECT * FROM Member WHERE `Username` = '" . strtolower($emailOrUsername) . "'");
+    if($user->rowCount() == 0){
+      $jsonResponse["success"] = false;
+    }
+  }
 
-  $dbpassword = $user['password'];
-  $dbId = $user['id'];
-
-  // foreach ($user as $row) {
-  //       $dbpassword = $row['password'];
-  //       $dbId = $row['id'];
-  //       break;
-  //       // print $row['username'] . "\t";
-  //       // print $row['password'] . "\t";
+  $dbpassword;
+  // if jsonResponse's success value isn't false, jsonResponse is still empty at this point, so the username/email exists.
+  // if(count($jsonResponse) == 0){
+  //   $dbpassword = $user->fetch()['password'];
   // }
-  // echo $dbpassword;
 
-  // echo $user->fetch()['password'] . "a\n";
-  // echo password_hash($_POST["password"], PASSWORD_BCRYPT, $options);
-
-  $options = [
-      'cost' => 12
-  ];
-  // $hash = password_hash($_POST["password"], PASSWORD_BCRYPT, $options);
-  if(password_verify($_POST["password"], $dbpassword)){
-    // session_start();
-    $_SESSION['user'] = $dbId;
-    $_SESSION['username'] = $user['username'];
-    $_SESSION['firstName'] = $user['firstName'];
-    $_SESSION['lastName'] = $user['lastName'];
-    $_SESSION['email'] = $user['email'];
-    // print "evenasdadd";
-    // print $dbpassword . " === " . password_hash($_POST["password"], PASSWORD_BCRYPT, $options);
-    header("Location: http://localhost:8888/caies");
+  if(count($jsonResponse) > 0){
+    //header("Content-Type: application/json");
+    echo json_encode($jsonResponse);
   }else{
-    // print "NOT MATCH";
+    $user = $user->fetch();
+    $dbpassword = $user['password'];
+    $options = [
+        'cost' => 12
+    ];
+    if(password_verify($_POST["password"], $dbpassword)){
+      $_SESSION['user'] = $user['id'];
+      $_SESSION['username'] = $user['username'];
+      $_SESSION['firstName'] = $user['firstName'];
+      $_SESSION['lastName'] = $user['lastName'];
+      $_SESSION['email'] = $user['email'];
+
+      $jsonResponse["success"] = true;
+      $jsonResponse["url"] = "http://localhost:8888/caies/";
+    }else{
+      $jsonResponse["success"] = false;
+    }
+    //header("Content-Type: application/json");
+    echo json_encode($jsonResponse);
   }
 ?>
