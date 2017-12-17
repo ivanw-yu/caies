@@ -1,0 +1,9 @@
+AddType application/x-httpd-php .htm .html
+
+
+#RewriteEngine On
+
+#RewriteRule ^#/(.*)$ /$1 [L,NC,R]
+
+#RewriteEngine on
+#  RewriteRule ^(.*)$ index.html [NC]
